@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        body {
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            text-align: center;
+            background-image: url('https://t3.ftcdn.net/jpg/05/59/43/08/360_F_559430832_nsbmfLyk7lzRrzM6x7yN9SzDUwmiFHgE.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .timer-container {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: yellow; /* Background color */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+        }
+
+        .display-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .display-item {
+            flex: 1;
+            margin: 0 10px;
+            font-size: 48px;
+            color: red; /* Text color */
+            padding: 10px;
+            text-align: center;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #fff; /* Button background color */
+            color: #333; /* Button text color */
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            animation: buttonAnimation 0.5s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #ffcc00; /* Button hover background color */
+            color: #fff; /* Button hover text color */
+        }
+
+        @keyframes buttonAnimation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+
+        @media screen and (max-width: 600px) {
+            .timer-container {
+                width: 100%;
+            }
+            .display-item {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        <div class="display-container">
+            <p class="display-item">FOCUS TIME</p>
+            <p class="display-item">CYCLES</p>
+            <p class="display-item">BREAK</p>
+        </div>
+        <div class="display-container">
+            <p id="timer" class="display-item">25:00</p>
+            <p id="cycles" class="display-item">0</p>
+            <p id="breakTimer" class="display-item">5:00</p>
+        </div>
+        <div>
+            <button id="startButton">Start</button>
+            <button id="resetButton">Reset</button>
+            <button id="breakButton">5 Minute Break</button>
+        </div>
+    </div>
+
+    <script>
+        let timer;
+        let breakTimer;
+        let isRunning = false;
+        let isBreakTime = false;
+        let time = 25 * 60; // Initial time: 25 minutes
+        let breakTime = 5 * 60; // Break time: 5 minutes
+        let cycles = 0;
+
+        const timerDisplay = document.getElementById('timer');
+        const breakTimerDisplay = document.getElementById('breakTimer');
+        const cyclesDisplay = document.getElementById('cycles');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const breakButton = document.getElementById('breakButton');
+
+        startButton.addEventListener('click', function() {
+            if (!isRunning) {
+                isRunning = true;
+                startButton.textContent = 'Pause';
+                timer = setInterval(function() {
+                    if (time > 0) {
+                        time--;
+                        const minutes = Math.floor(time / 60);
+                        const seconds = time % 60;
+                        timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    } else {
+                        clearInterval(timer);
+                        if (!isBreakTime) {
+                            isBreakTime = true;
+                            startButton.textContent = 'Start Break';
+                            breakTimerDisplay.style.display = 'inline-block';
+                            timerDisplay.style.marginRight = '0';
+                            time = breakTime;
+                            const minutes = Math.floor(time / 60);
+                            const seconds = time % 60;
+                            timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                            const audio = new Audio('alarm.mp3'); // Path to your alarm sound file
+                            audio.play();
+                        } else {
+                            isBreakTime = false;
+                            startButton.textContent = 'Start';
+                            time = 25 * 60;
+                            const minutes = Math.floor(time / 60);
+                            const seconds = time % 60;
+                            timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                            breakTimerDisplay.style.display = 'none';
+                            timerDisplay.style.marginRight = '20px';
+                            cycles++;
+                            cyclesDisplay.textContent = `Cycles: ${cycles}`;
+                            const audio = new Audio('alarm.mp3'); // Path to your alarm sound file
+                            audio.play();
+                        }
+                    }
+                }, 1000);
+            } else {
+                clearInterval(timer);
+                clearInterval(breakTimer);
+                isRunning = false;
+                startButton.textContent = 'Start';
+            }
+        });
+
+        resetButton.addEventListener('click', function() {
+            clearInterval(timer);
+            clearInterval(breakTimer);
+            isRunning = false;
+            isBreakTime = false;
+            time = 25 * 60;
+            breakTime = 5 * 60;
+            cycles = 0;
+            const minutes = Math.floor(time / 60);
+            const seconds = time % 60;
+            timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            const breakMinutes = Math.floor(breakTime / 60);
+            const breakSeconds = breakTime % 60;
+            breakTimerDisplay.textContent = `${breakMinutes < 10 ? '0' : ''}${breakMinutes}:${breakSeconds < 10 ? '0' : ''}${breakSeconds}`;
+            cyclesDisplay.textContent = `Cycles: ${cycles}`;
+            startButton.textContent = 'Start';
+            breakTimerDisplay.style.display = 'none';
+            timerDisplay.style.marginRight = '20px';
+        });
+
+        breakButton.addEventListener('click', function() {
+            if (!isRunning && !isBreakTime) {
+                isBreakTime = true;
+                startButton.textContent = 'Start Break';
+                time = breakTime;
+                const minutes = Math.floor(time / 60);
+                const seconds = time % 60;
+                timerDisplay.style.marginRight = '0';
+                timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                breakTimerDisplay.style.display = 'none';
+                breakTimer = setInterval(function() {
+                    if (breakTime > 0) {
+                        breakTime--;
+                        const breakMinutes = Math.floor(breakTime / 60);
+                        const breakSeconds = breakTime % 60;
+                        breakTimerDisplay.textContent = `${breakMinutes < 10 ? '0' : ''}${breakMinutes}:${breakSeconds < 10 ? '0' : ''}${breakSeconds}`;
+                    } else {
+                        clearInterval(breakTimer);
+                        isRunning = false;
+                        isBreakTime = false;
+                        time = 25 * 60;
+                        const minutes = Math.floor(time / 60);
+                        const seconds = time % 60;
+                        timerDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                        breakTimerDisplay.style.display = 'none';
+                        timerDisplay.style.marginRight = '20px';
+                        const audio = new Audio('alarm.mp3'); // Path to your alarm sound file
+                        audio.play();
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
+ 
