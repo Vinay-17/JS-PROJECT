@@ -10,34 +10,40 @@
   background-repeat: no-repeat;
   background-attachment: fixed; 
   background-size: 100% 100%;
-  background-color:;
+  background-image: linear-gradient(to right,gold , red);
 }
 h1{
-    color:orange;
+    color:blue;
     font-size:50px;
     font-family:Verdana, Geneva, Tahoma, sans-serif
 }
 h2{
     color:blue
 }
+#contentdiv{
+    border:5px solid orange;
+    padding:10px;
+    margin-bottom: 10px;
+
+}
 .content{
     font-size:30px;
-    color:yellowgreen
+    color:whitesmoke
 }label
  </style>
 </head>
 <body>
     <h1 id="heading">POMODORO TIMER</h1>
     <h2><p><i>HOW IT WORKS</i></p></h2>
+    <div id="contentdiv">
      <p class="content"> <maruee>The Pomodoro Technique is a time management method based on 25-minute stretches of focused work broken by five-minute breaks.<br>
-         Longer breaks, typically 15 to 30 minutes, are taken after four consecutive work intervals.</p>
-        <div >
-
-        </div> 
+         Longer breaks, typically 15 to 30 minutes, are taken after four consecutive work intervals.<br>
+        <div class="content"> For more info click on POMODORO TIMER BUTTON</div></p>
+         </div> 
     <button class="timer-btn" id="navigate" onClick="revert()">POMODORO-TIMER</button>
     <script>
         function revert(link){
-            location.href="./index.html"
+            location.href="./main.html"
         }
     </script>
 </body>
